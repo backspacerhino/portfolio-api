@@ -1,0 +1,83 @@
+# docker-compose version (https://docs.docker.com/compose/compose-file/compose-versioning)
+# This file is YAML format, indentations are important
+version: "3.0"
+# Services for our api
+# Each service is a separate container
+services:
+# Name of service
+# This is our actual app
+  public-api:
+#   If name is not defined, name will default to service name ("public-api")
+#   name: "test"
+#   Build from Dockerfile (. below is just shorthand for ./Dockerfile)
+#   so it will build from  specified path 
+    build: .
+#   Each container has its own ports and we want to map inside port 8080 to our port 80
+#   so that we can access it on ex. localhost:80
+#   In case this is not defined, our app wont work
+    ports:
+      - "80":"8080"
+#   Restart alaways, unless manually stopped
+    restart: unless-stopped
+#   Everything in current directory (.) will be "copied" to specific directory inside container (./home/src) 
+    volumes:
+      - .:/home/src
+#   This service depends on "db" service and docker-compose will auto restart this service until "db" is running
+    depends_on:
+      - db
+#   In order for our services to communicate we need to put them on the same network
+#   backend is custom name made up by me
+    networks:
+      - backend
+# This is our database
+  db:
+#   In case we are not using our dockerfile, we can use image from docker hub
+    image: "mysql:8"
+#   Command is the same as CMD in dockerfile (I think) (https://docs.docker.com/engine/reference/builder/#cmd)
+#   We are allowing normal auth for db (https://dba.stackexchange.com/questions/209514/what-is-mysql-native-password)
+    command: "--default-authentication-plugin=mysql_native_password"
+    ports:
+      - "3306:3306"
+    restart: on-failure
+#   This will read our .env file variables (${DB_DATABASE}) and set container specific env variables to that value
+#   Each container from docker hub can have its own env variables defined in docker hub (https://hub.docker.com/_/mysql scroll to Environment variables)
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+#   In order to persist (save) our data we need to map volume "dbdata" (custom name choosen by me) to /var/lib/mysql (defined by docker image and must always be this)
+#   We also copy our folder with mysql-init.sql (both custom names) to /docker-entrypoint-initdb.d (defined by docker image) and mysql with automatically run this .sql once it starts
+    volumes:
+      - "dbdata:/var/lib/mysql"
+      - "./docker-files:/docker-entrypoint-initdb.d"
+    networks:
+      - backend
+# This is GUI to display our db data
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    ports:
+      - "8000:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+    networks:
+      - backend
+# This is in-memory cache that we will not use in this project yet
+  redis:
+    image: "redis:5.0.7-alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis_data:/data"
+    networks:
+      - backend
+# This part defines what our types for custom named volumes is
+# This is only for persisted volumes meaning that this data will remain even after our container is not running
+volumes:
+  dbdata: null
+  redis_data: null
+# This part defines our custom named networks
+# There are several different network types but we are using bridge (https://docs.docker.com/network/bridge)
+networks:
+  backend: bridge
