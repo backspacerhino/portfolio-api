@@ -1,18 +1,41 @@
 ## Portfolio API
 
+
+## Installation
+
+```
+yarn install 
+or
+npm install
+```
+
+ Copy .env.example to .env
+```
+cp .env.example .env
+```
+
+Start server using git bash (or similiar)
+```
+yarn dev
+```
+
+## Tasks
+
 * Get familiar with the project and how things work
 * Create your own Controllers for routes 
 * Routes should be based on REST (/posts) for GET, POST
 
 Don't create specific rest endpoints (/posts/:id) because it won't work yet
 
-**Always branch out**
 
-### Branches
+
+## Branches
 
 Master [production, locked]
 
 Dev [development, all dev sub branches should merge in this one]
+
+### **Always branch out**
 
 Naming convention for branching
 
