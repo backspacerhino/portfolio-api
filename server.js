@@ -12,7 +12,6 @@ http.createServer(function (req, res) {
     let url = routeUtil.parseUrl(urlObj.pathname) // Using Core util (This type of thing will usually be in core of framework you're using)
     let controllerName = ""
     let methodName = ""
-    console.log(url)
     // Really bad way of doing this and is not advised
     // However, we will use it (for now) to fake what autoloader and route hander are doing
     switch (url) {
@@ -20,9 +19,9 @@ http.createServer(function (req, res) {
             controllerName = "Home";
             methodName = "test";
             break;
-        case "notatest":
-            controllerName = "NotAHome";
-            methodName = "test";
+        case "manlets":
+            controllerName = "Manlets";
+            methodName = "manlets";
             break;
         default:
             res.setHeader('Content-Type', 'application/json');
@@ -31,7 +30,6 @@ http.createServer(function (req, res) {
     }
 
     methodName = urlObj.method.toLowerCase() + methodName;
-    console.log(methodName);
     controllerName += "Controller";
     return routeUtil.handleRoute({ req, res, controllerName, methodName })
 }).listen(process.env.PORT);
