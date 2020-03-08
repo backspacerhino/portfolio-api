@@ -52,6 +52,7 @@ yarn dev
 
 * Get familiar with the updated project and how things work (compare to previous versions)
 * Create your own routes and handlers
+* Write titles and descriptions for your PRs
 
 Don't create specific rest endpoints (/posts/:id) because it won't work yet
 
