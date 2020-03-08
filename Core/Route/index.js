@@ -98,6 +98,18 @@ class Route {
     post(route, handler) {
         this.add(route, handler, "POST")
     }
+
+    patch(route, handler) {
+        this.add(route, handler, "PATCH")
+    }
+
+    put(route, handler) {
+        this.add(route, handler, "PUT")
+    }
+
+    delete(route, handler) {
+        this.add(route, handler, "DELETE")
+    }
 }
 
 module.exports = Route
