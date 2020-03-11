@@ -2,21 +2,17 @@ const http = require('http');
 
 class Route {
 
-    static _instance;
-
     // This will hold our routes as keys and map of route handlers as values
     // Route handler will have key as method and handler as value
     // Because we can have more route handlers for one route based on method
-    _routeHandlers = new Map();
     constructor() {
 
     }
 
     static getInstance() {
-        if (this._instance) {
-            return this._instance;
+        if (!this._instance) {
+            this._instance = new Route();
         }
-        this._instance = new Route();
         return this._instance;
     }
 
@@ -41,6 +37,9 @@ class Route {
          */
 
         // Check if route handler already exists
+        if(!this._routeHandlers){
+            this._routeHandlers = new Map()
+        }
         let routeHandlerMap = this._routeHandlers.get(route)
 
         if (routeHandlerMap) {
