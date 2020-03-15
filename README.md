@@ -3,7 +3,7 @@
 Step by step building blocks of how popular framework work. Once all major aspects are covered we will move to an actual framework
 
 
-### Current version:  __2__
+### Current version:  __3__
 
 ## Version description:
 
@@ -35,18 +35,13 @@ yarn dev
 
 ## Breaking changes
 
- * Route handlers are now second parameter in routes.js routes registration
- * Handler returns must be explicitly defined as *res.end* with *JSON.stringify*
+ * Route handlers are now *strings* for actual handlers
 
 
 ## Improvements
 
-* Separated server start into *Ignitor*
-* Separated route handlers into *Route*
-* Separated routes into *routes*
-* Introduced support for route methods (Only major ones supported ( *GET, POST, PATCH, PUT, DELETE* )
-
-
+* Autoload of all files in Controllers
+* Reintroduced proper Controllers
 
 ## Tasks
 

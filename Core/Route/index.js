@@ -4,12 +4,20 @@ class Route {
 
     static _instance;
 
+    _ignitor;
+    _preloaded = new Map()
+
     // This will hold our routes as keys and map of route handlers as values
     // Route handler will have key as method and handler as value
     // Because we can have more route handlers for one route based on method
     _routeHandlers = new Map();
+
     constructor() {
 
+    }
+
+    set preloaded(preloaded){
+        this._preloaded = preloaded
     }
 
     static getInstance() {
@@ -74,7 +82,29 @@ class Route {
                     message: `Handler for method '${method}' for route '${route}' not found`
                 }))                
             }
-            return methodHandler({ req, res })
+
+            // HomeController.test
+            const explodedHandler = methodHandler.split(".")
+            const controllerName = explodedHandler[0]
+            const methodName =explodedHandler[1]
+            let handler = this._preloaded.get(controllerName)
+            if(!handler){
+                return res.end(JSON.stringify({
+                    success: false,
+                    message: `Handler for route '${route}' not found`
+                }))   
+            }
+            handler = new handler()
+
+            try {
+                return handler[methodName]({ req, res })
+
+            } catch (error) {
+                return res.end(JSON.stringify({
+                            success: false,
+                            message: `Method '${methodName}' in handler ${controllerName} not found.`
+                        }))
+            }
         }
         return res.end(JSON.stringify({
             success: false,

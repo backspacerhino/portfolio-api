@@ -7,6 +7,7 @@ require('dotenv').config();
 
 // These two lines
 const ignitor = Ignitor.getInstance();
+ignitor.fire()
 ignitor.startHttpServer();
 
 // would be the same as
