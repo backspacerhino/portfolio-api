@@ -41,5 +41,6 @@ class Server {
 }
 
 const instance = new Server()
-
+console.log("Server CLASS", Server);
+console.log("Server INS", instance);
 module.exports = instance

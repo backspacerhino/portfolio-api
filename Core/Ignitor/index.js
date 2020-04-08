@@ -1,66 +1,60 @@
 const http = require('http');
-const Route = require("../Route/index")
+const Server = require("../Server/index")
 const fs = require('fs');
 
-
-// This just makes sure that once this ignitor is loaded inside server.js it will also load routes and hence save our routes
-// In real application this would be loaded dynamically but for now we're using this
-require("../../routes")
 class Ignitor {
-
-    static _instance;
-    _route;
-
-    _rootDir = "../../app/"
-
-    _dirs = [
-        "Controllers"
-    ]
-
-    _preloaded = new Map()
-
     constructor() {
 
+        if (!Ignitor.instance) {
+            Ignitor.instance = this
+            this._route;
+            this._rootDir = "../../app/"
+            this._dirs = [
+                "Controllers"
+            ]
+            this._preloaded = new Map()
+        }
+        // Initialize object
+        return Ignitor.instance
     }
 
-    get preloaded(){
+    get preloaded() {
         return this._preloaded
     }
 
-    static getInstance() {
-        if (this._instance) {
-            return this._instance;
-        }
-        this._instance = new Ignitor();
-        return this._instance;
+    resolve(controllerName) {
+        return this._preloaded.get(controllerName)
     }
 
-
     fire() {
-        this._route = Route.getInstance()
+        // Server.setIgnitor(Ignitor.instance)
+        this.Server = Server
         this.preload()
-        this._route.preloaded = this._preloaded
     }
 
     preload() {
         this._dirs.filter(dir => {
-            fs.readdirSync("app/"+dir).map(file => {
+            fs.readdirSync("app/" + dir).map(file => {
                 const controllerName = file.split(".")[0]
-                const module = require(`${this._rootDir}${dir}/${file}`)                
+                const module = require(`${this._rootDir}${dir}/${file}`)
                 this._preloaded.set(controllerName, module);
             });
         })
     }
 
     startHttpServer() {
-
         console.log("Starting HTTP server...");
         http.createServer((req, res) => {
             res.setHeader('Content-Type', 'application/json');
-            // Our route handler is now in separate file
-            return this._route.handle({ req, res })
+            // Our route handler is now in separate file            
+            return this.Server.handle(req, res)
         }).listen(process.env.PORT);
     }
 }
 
-module.exports = Ignitor
+const instance = new Ignitor()
+
+console.log("IGNITOR CLASS", Ignitor);
+console.log("IGNITOR INS", instance);
+
+module.exports = instance

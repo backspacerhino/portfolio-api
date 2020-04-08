@@ -4,13 +4,11 @@ const Ignitor = require("./Core/Ignitor/index")
 // https://www.twilio.com/blog/2017/08/working-with-environment-variables-in-node-js.html
 require('dotenv').config();
 
+Ignitor.fire()
 
-// These two lines
-const ignitor = Ignitor.getInstance();
-ignitor.fire()
-ignitor.startHttpServer();
 
-// would be the same as
-// (Ignitor.getInstance()).startHttpServer();
+// This just makes sure that once this ignitor is loaded inside server.js it will also load routes and hence save our routes
+// In real application this would be loaded dynamically but for now we're using this
+require("./routes")
 
-// () are needed around Ignitor.getInstance() because otherwise JS interpreter would think we are calling .startHttpServer() on .getInstance() and not on whatever 
+Ignitor.startHttpServer();
