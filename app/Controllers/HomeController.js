@@ -1,6 +1,8 @@
 class HomeController {
-    test({ req, res }) {
-        console.log("RADI");
+    test({ req, res }) {        
+        return {
+            test: "radi"
+        }
     }
 }
 
