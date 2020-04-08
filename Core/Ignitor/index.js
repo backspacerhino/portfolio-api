@@ -1,21 +1,25 @@
 const http = require('http');
 const Server = require("../Server/index")
 const fs = require('fs');
+// This is a special package that allows reading from .env file 
+// https://www.twilio.com/blog/2017/08/working-with-environment-variables-in-node-js.html
+require('dotenv').config();
 
 class Ignitor {
     constructor() {
+        this._rootDir = "../../app"
+        this._dirs = [
+            "Controllers"
+        ]
+        this._preloaded = new Map()
+    }
 
-        if (!Ignitor.instance) {
-            Ignitor.instance = this
-            this._route;
-            this._rootDir = "../../app/"
-            this._dirs = [
-                "Controllers"
-            ]
-            this._preloaded = new Map()
+    static getInstance(){
+        if(!this.instance){
+            this.instance = new this()
         }
-        // Initialize object
-        return Ignitor.instance
+        
+        return this.instance
     }
 
     get preloaded() {
@@ -26,35 +30,40 @@ class Ignitor {
         return this._preloaded.get(controllerName)
     }
 
-    fire() {
-        // Server.setIgnitor(Ignitor.instance)
-        this.Server = Server
+    fire() {       
+        this.Server = Server.getInstance()  
+        this.Server.setIgnitor(Ignitor.getInstance())              
         this.preload()
+        this.startKernel()
+        this.loadRoutes()        
     }
 
     preload() {
         this._dirs.filter(dir => {
             fs.readdirSync("app/" + dir).map(file => {
                 const controllerName = file.split(".")[0]
-                const module = require(`${this._rootDir}${dir}/${file}`)
+                const module = require(`${this._rootDir}/${dir}/${file}`)
                 this._preloaded.set(controllerName, module);
             });
-        })
+        })        
     }
 
-    startHttpServer() {
+    startKernel(){
+        require(`${this._rootDir}/../kernel`)
+
+    }
+
+    loadRoutes(){
+        require(`${this._rootDir}/../routes`)
+    }
+
+    startHttpServer() {        
         console.log("Starting HTTP server...");
         http.createServer((req, res) => {
             res.setHeader('Content-Type', 'application/json');
-            // Our route handler is now in separate file            
             return this.Server.handle(req, res)
         }).listen(process.env.PORT);
     }
 }
 
-const instance = new Ignitor()
-
-console.log("IGNITOR CLASS", Ignitor);
-console.log("IGNITOR INS", instance);
-
-module.exports = instance
+module.exports = Ignitor

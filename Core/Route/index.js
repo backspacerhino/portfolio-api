@@ -1,19 +1,22 @@
 class Route {
-    constructor(route, handler, methods) {
+    constructor({ route, handler, method }) {
         this._middlewares = []
         this.route = null;
-        this.handler = null;
-        this.methods = null;
-        this.init(route, handler, methods)
+        this.handler = {
+            handler: null,
+            method: null
+        };
+        this.method = null;
+        this.init(route, handler, method)
     }
 
-    init(route, handler, methods){
+    init(route, handler, method) {
         // TODO: These should all be validated first
-        
+
         this._sanitizeUrl(route)
         this.route = route;
         this.handler = handler;
-        this.methods = methods;
+        this.method = method;
     }
 
     _sanitizeUrl(url) {
